@@ -1,0 +1,60 @@
+# Re-run this cell 
+import pandas as pd
+
+# Read in the data
+schools = pd.read_csv("schools.csv")
+
+# Preview the data
+schools.head()
+
+# Start coding here...
+# Add as many cells as you like...
+
+# since the maximum score is 800, I substracted only the math score, which is at least 80% of the maximum score
+schools_math80 = schools[schools["average_math"] >= 800*0.8] # since the maximum score is 800, I substracted only the math score, which is at least 80% of the maximum score
+best_math_schools = schools_math80[["school_name", "average_math"]].sort_values("average_math", ascending=False)
+print(best_math_schools.head())
+
+# adding up 3 sections of SAT together, creating a new column of the total of 3 given columns, naming it "total_SAT", and filtering it by "total_SAT" in descending order
+schools["total_SAT"] = schools["average_math"] + schools["average_reading"] + schools["average_writing"]
+best_schools = schools.sort_values("total_SAT", ascending=False)
+best_schools = best_schools[["school_name", "total_SAT"]]
+
+# displaying top 10 schools
+top_10_schools = best_schools.head(10)
+print(top_10_schools)
+
+# calculating the number of schools, average SAT and the standard deviation of SAT, assigning new names to the columns "num_schools", "average_SAT" and "std_SAT" correspondingly, grouping everything by the "borough" column
+schools = schools.groupby("borough").agg(num_schools = ("school_name", "count"), average_SAT = ("total_SAT", "mean"), std_SAT = ("total_SAT", "std")).round(2).sort_values("std_SAT", ascending=False)
+
+# picking the borough by the highest standard deviation of the SAT
+largest_std_dev = schools[schools["std_SAT"] == schools["std_SAT"].max()]
+
+print(largest_std_dev.head())
+
+************ THE OUTPUT ************
+
+school_name  average_math
+88                              Stuyvesant High School           754
+170                       Bronx High School of Science           714
+93                 Staten Island Technical High School           711
+365  Queens High School for the Sciences at York Co...           701
+68   High School for Mathematics, Science, and Engi...           683
+
+
+                                           school_name  total_SAT
+88                              Stuyvesant High School       2144
+170                       Bronx High School of Science       2041
+93                 Staten Island Technical High School       2041
+174  High School of American Studies at Lehman College       2013
+333                        Townsend Harris High School       1981
+365  Queens High School for the Sciences at York Co...       1947
+5                       Bard High School Early College       1914
+280                     Brooklyn Technical High School       1896
+45                       Eleanor Roosevelt High School       1889
+68   High School for Mathematics, Science, and Engi...       1889
+
+
+           num_schools  average_SAT  std_SAT
+borough                                     
+Manhattan           89      1340.13   230.29
